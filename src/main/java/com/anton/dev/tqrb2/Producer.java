@@ -8,23 +8,42 @@ package com.anton.dev.tqrb2;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
-
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Producer extends MessageQueueEndPoint {
-    private static final Logger LOGGER = LogManager.getLogger(Producer.class);
+public final class Producer extends MessageQueueEndPoint {
     
-    public Producer(String queueName) throws TimeoutException {
+    private static final Logger LOGGER = LogManager.getLogger(Producer.class);    
+    private static Producer instance;
+    
+    private Producer(String queueName) throws TimeoutException {
         super(queueName);
+    }
+    
+    public static Producer getInstance(String queueName) {
+        if (instance == null) {
+            synchronized (Producer.class) {
+                if(instance == null){
+                    try {
+                        instance = new Producer(queueName);
+                        LOGGER.info("Instancia de Producer creada con la cola: " + queueName);
+                    } catch (TimeoutException ex) {
+                        LOGGER.error("Error en crear la instancia de Producer en la cola: " + queueName);
+                        LOGGER.error("TimeoutException: " + ex.getMessage());
+                    }
+                }
+            }
+        }
+        return instance;
     }
     
     public void publishMessage(HashMap<String, Integer> msgMap) {
         try {
             channel.basicPublish("", endPointName, null, SerializationUtils.serialize(msgMap));
-        } catch (IOException e) {
-            LOGGER.error("Error connecting to Queue." , e);
+        } catch (IOException ex) {
+            LOGGER.error("Error en publicar mensaje en la cola: " + endPointName);
+            LOGGER.error("IOException: " + ex.getMessage());
         }
     }
 }

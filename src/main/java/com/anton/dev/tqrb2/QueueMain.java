@@ -23,17 +23,17 @@ public class QueueMain {
         final String QUEUE_NAME = "MY_QUEUE";
     
         //Spawn Consumer Thread, which will always listening for the messages to be processed
-        Consumer consumer = new Consumer(QUEUE_NAME);
+        Consumer consumer = Consumer.getInstance(QUEUE_NAME);
         Thread consumerThread = new Thread(consumer);
         consumerThread.start();
     
         //Publishes msg in the queue
-        Producer producer = new Producer(QUEUE_NAME);
+        Producer producer = Producer.getInstance(QUEUE_NAME);
         
         HashMap message = new HashMap();
         
         //Produce 100 msgs
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
            // Thread.sleep(1000);
            LOGGER.info("Message #"+ i +" sent to Queue.");
            message.put("My Message", i);

@@ -15,12 +15,30 @@ import com.rabbitmq.client.QueueingConsumer;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class Consumer extends MessageQueueEndPoint implements Runnable {
+public final class Consumer extends MessageQueueEndPoint implements Runnable {
 
-    private static final Logger LOGGER = LogManager.getLogger(Consumer.class);
+    private static final Logger LOGGER = LogManager.getLogger(Consumer.class);   
+    private static Consumer instance;
 
-    public Consumer(String queueName) throws TimeoutException {
+    private Consumer(String queueName) throws TimeoutException {
         super(queueName);
+    }
+    
+    public static Consumer getInstance(String queueName) {
+        if (instance == null) {
+            synchronized (Producer.class) {
+                if(instance == null){
+                    try {
+                        instance = new Consumer(queueName);
+                        LOGGER.info("Instancia de Consumer creada con la cola: " + queueName);
+                    } catch (TimeoutException ex) {
+                        LOGGER.error("Error en crear la instancia de Consumer en la cola: " + queueName);
+                        LOGGER.error("TimeoutException: " + ex.getMessage());
+                    }
+                }
+            }
+        }
+        return instance;
     }
 
     @Override
