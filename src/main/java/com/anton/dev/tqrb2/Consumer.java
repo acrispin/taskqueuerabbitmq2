@@ -12,27 +12,30 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import org.apache.commons.lang.SerializationException;
 
 public final class Consumer extends MessageQueueEndPoint implements Runnable {
 
-    private static final Logger LOGGER = LogManager.getLogger(Consumer.class);   
+    private static final Logger LOGGER = LogManager.getLogger(Consumer.class);
+    private static final String QUEUE_NAME = "MY_QUEUE";
     private static Consumer instance;
 
     private Consumer(String queueName) throws TimeoutException {
         super(queueName);
     }
     
-    public static Consumer getInstance(String queueName) {
+    public static Consumer getInstance() {
         if (instance == null) {
             synchronized (Producer.class) {
                 if(instance == null){
                     try {
-                        instance = new Consumer(queueName);
-                        LOGGER.info("Instancia de Consumer creada con la cola: " + queueName);
+                        instance = new Consumer(QUEUE_NAME);
+                        LOGGER.info("Instancia de Consumer creada con la cola: " + QUEUE_NAME);
                     } catch (TimeoutException ex) {
-                        LOGGER.error("Error en crear la instancia de Consumer en la cola: " + queueName);
+                        LOGGER.error("Error en crear la instancia de Consumer en la cola: " + QUEUE_NAME);
                         LOGGER.error("TimeoutException: " + ex.getMessage());
                     }
                 }
@@ -44,15 +47,21 @@ public final class Consumer extends MessageQueueEndPoint implements Runnable {
     @Override
     public void run() {        
         try {
-            QueueingConsumer consumer = new QueueingConsumer(channel);
+            QueueingConsumer consumer = new QueueingConsumer(this.getChannel());
             //start consuming messages. Auto acknowledge messages.
-            channel.basicConsume(endPointName, true, consumer);
+            this.getChannel().basicConsume(endPointName, true, consumer);
+            
             while (true) { //keep listening for the message
-                HashMap<String, Integer> msgMap = consumeMessage(consumer);
-                LOGGER.info("Message #" + msgMap.get("My Message") + " received from Queue.");
+                try {
+                    HashMap<String, Integer> msgMap = consumeMessage(consumer);
+                    LOGGER.info("Message #" + msgMap.get("My Message") + " received from Queue.");
+                } catch (IOException | InterruptedException | SerializationException ex) {
+                    LOGGER.error("Error received from Queue", ex);
+                }                
             }
-        } catch (IOException | InterruptedException e) {
-            LOGGER.error("Error connecting to Queue.", e);
+        } catch (IOException | ShutdownSignalException ex) {
+            LOGGER.error("Error connecting to Queue: ", ex.getMessage());
+            LOGGER.error(ex);
         }        
     }
 
