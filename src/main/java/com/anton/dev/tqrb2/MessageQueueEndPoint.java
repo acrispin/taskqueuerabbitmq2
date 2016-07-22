@@ -60,52 +60,10 @@ public abstract class MessageQueueEndPoint {
      * @throws IOException
      */
      public void close() throws IOException{
-         this.getConnection().close(); //closing connection, closes all the open channels
+         this.connection.close(); //closing connection, closes all the open channels
      }
  
      public int getCurrentMessageCount() throws IOException {
-         return getChannel().queueDeclarePassive(this.getEndPointName()).getMessageCount();
+         return channel.queueDeclarePassive(this.endPointName).getMessageCount();
      }
-
-    /**
-     * @return the connection
-     */
-    public Connection getConnection() {
-        return connection;
-    }
-
-    /**
-     * @param connection the connection to set
-     */
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
-
-    /**
-     * @return the channel
-     */
-    public Channel getChannel() {
-        return channel;
-    }
-
-    /**
-     * @param channel the channel to set
-     */
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    /**
-     * @return the endPointName
-     */
-    public String getEndPointName() {
-        return endPointName;
-    }
-
-    /**
-     * @param endPointName the endPointName to set
-     */
-    public void setEndPointName(String endPointName) {
-        this.endPointName = endPointName;
-    }
 }
