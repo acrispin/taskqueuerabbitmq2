@@ -12,7 +12,7 @@ import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class Producer extends MessageQueueEndPoint {
+public final class Producer extends MessageQueueEndPoint2 {
     
     private static final Logger LOGGER = LogManager.getLogger(Producer.class);
     private static final String QUEUE_NAME = "MY_QUEUE";

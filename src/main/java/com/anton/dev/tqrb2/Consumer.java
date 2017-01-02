@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang.SerializationException;
 
-public final class Consumer extends MessageQueueEndPoint implements Runnable {
+public final class Consumer extends MessageQueueEndPoint2 implements Runnable {
 
     private static final Logger LOGGER = LogManager.getLogger(Consumer.class);
     private static final String QUEUE_NAME = "MY_QUEUE";
@@ -29,7 +29,7 @@ public final class Consumer extends MessageQueueEndPoint implements Runnable {
     
     public static Consumer getInstance() {
         if (instance == null) {
-            synchronized (Producer.class) {
+            synchronized (Consumer.class) {
                 if(instance == null){
                     try {
                         instance = new Consumer(QUEUE_NAME);
@@ -45,7 +45,7 @@ public final class Consumer extends MessageQueueEndPoint implements Runnable {
     }
 
     @Override
-    public void run() {        
+    public void run() {
         try {
             QueueingConsumer consumer = new QueueingConsumer(this.getChannel());
             //start consuming messages. Auto acknowledge messages.

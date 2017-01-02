@@ -5,6 +5,7 @@
  */
 package com.anton.dev.tqrb2;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +24,9 @@ public class QueueMain {
     public static void main(String[] argv) throws Exception {
         // consumerMessages();
         // producerMessages(100);
-        testQueueConcurrent2(15);
-        // testQueue2(10);
-        // testQueueConcurrent(10);
+        //testQueueConcurrent2(15);
+        testQueue2(7);
+        // testQueueConcurrent(1);
     }
     
     public static Consumer consumerMessages() {        
@@ -36,7 +37,7 @@ public class QueueMain {
         return consumer;
     }
     
-    public static void producerMessages(int numMessage) {
+    public static Producer producerMessages(int numMessage) {
         //Publishes msg in the queue
         Producer producer = Producer.getInstance();
         HashMap message = new HashMap();
@@ -46,16 +47,22 @@ public class QueueMain {
             message.put("My Message", i);
             producer.publishMessage(message);
         }
+        return producer;
     }
 
     public static void testQueue2(int numMessage) {
         Consumer consumer = consumerMessages();
-        producerMessages(numMessage);
-//        try {
-//            consumer.close();
-//        } catch (IOException ex) {
-//            LOGGER.error("IOException: " + ex.getMessage());
-//        }
+        Producer producer = producerMessages(numMessage);
+        try {
+            consumer.close();
+        } catch (IOException ex) {
+            LOGGER.error("IOException Consumer: " + ex.getMessage());
+        }
+        try {
+            producer.close();
+        } catch (IOException ex) {
+            LOGGER.error("IOException Producer: " + ex.getMessage());
+        }
     }
 
     public static void testQueueConcurrent2(int numThreads) throws InterruptedException {
