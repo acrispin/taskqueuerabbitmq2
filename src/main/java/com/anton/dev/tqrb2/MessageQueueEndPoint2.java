@@ -32,7 +32,7 @@ public abstract class MessageQueueEndPoint2 {
         @Override
         protected Channel initialValue() {
             try {
-                LOGGER.info("Create channel2.");
+                LOGGER.info("Create channel2." + " from thread " + Thread.currentThread().getName());
                 return connection.createChannel();
             } catch (IOException ex) {
                 LOGGER.error(ex);
@@ -88,10 +88,12 @@ public abstract class MessageQueueEndPoint2 {
         if (channel == null) {
             throw new NullPointerException("Error en obtener canal.");
         }
+        // channel.basicQos(1); // http://stackoverflow.com/questions/29841690/how-to-consume-one-message/29862373#29862373
         return channel;
     }
     
-    protected void removeChannel() {
+    protected void removeChannel() throws IOException, TimeoutException {
+        CHANNELS.get().close();
         CHANNELS.remove();
     }
 

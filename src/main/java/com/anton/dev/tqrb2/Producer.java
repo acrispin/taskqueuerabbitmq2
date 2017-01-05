@@ -28,7 +28,7 @@ public final class Producer extends MessageQueueEndPoint2 {
                 if(instance == null){
                     try {
                         instance = new Producer(QUEUE_NAME);
-                        LOGGER.info("Instancia de Producer creada con la cola: " + QUEUE_NAME);
+                        LOGGER.info("Instancia de Producer creada con la cola: " + QUEUE_NAME + " from thread " + Thread.currentThread().getName());
                     } catch (TimeoutException ex) {
                         LOGGER.error("Error en crear la instancia de Producer en la cola: " + QUEUE_NAME);
                         LOGGER.error("TimeoutException: " + ex.getMessage());
@@ -39,7 +39,7 @@ public final class Producer extends MessageQueueEndPoint2 {
         return instance;
     }
     
-    public void publishMessage(HashMap<String, Integer> msgMap) {
+    public void publishMessage(HashMap<String, Object> msgMap) {
         try {
             this.getChannel().basicPublish("", endPointName, null, SerializationUtils.serialize(msgMap));
         } catch (IOException ex) {

@@ -33,7 +33,7 @@ public final class Consumer extends MessageQueueEndPoint2 implements Runnable {
                 if(instance == null){
                     try {
                         instance = new Consumer(QUEUE_NAME);
-                        LOGGER.info("Instancia de Consumer creada con la cola: " + QUEUE_NAME);
+                        LOGGER.info("Instancia de Consumer creada con la cola: " + QUEUE_NAME + " from thread " + Thread.currentThread().getName());
                     } catch (TimeoutException ex) {
                         LOGGER.error("Error en crear la instancia de Consumer en la cola: " + QUEUE_NAME);
                         LOGGER.error("TimeoutException: " + ex.getMessage());
@@ -53,8 +53,11 @@ public final class Consumer extends MessageQueueEndPoint2 implements Runnable {
             
             while (true) { //keep listening for the message
                 try {
-                    HashMap<String, Integer> msgMap = consumeMessage(consumer);
-                    LOGGER.info("Message #" + msgMap.get("My Message") + " received from Queue.");
+                    HashMap<String, Object> msgMap = consumeMessage(consumer);
+                    for (String key : msgMap.keySet()) {
+                        LOGGER.info("Message " + key + "-" + msgMap.get(key) + " received from Queue from thread " + Thread.currentThread().getName());
+                    }
+                    Thread.sleep(1000);
                 } catch (IOException | InterruptedException | SerializationException ex) {
                     LOGGER.error("Error received from Queue", ex);
                 }                
@@ -71,8 +74,8 @@ public final class Consumer extends MessageQueueEndPoint2 implements Runnable {
      * @return
      * @throws Exception
      */
-    private HashMap<String, Integer> consumeMessage(QueueingConsumer consumer) throws IOException, InterruptedException {
+    private HashMap<String, Object> consumeMessage(QueueingConsumer consumer) throws IOException, InterruptedException {
         QueueingConsumer.Delivery delivery = consumer.nextDelivery(); //blocking call
-        return (HashMap<String, Integer>) SerializationUtils.deserialize(delivery.getBody());
+        return (HashMap<String, Object>) SerializationUtils.deserialize(delivery.getBody());
     }
 }

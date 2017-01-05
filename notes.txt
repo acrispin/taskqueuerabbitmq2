@@ -1,1 +1,7 @@
 notas
+
+Consumir mensajes de la cola uno a la vez
+http://stackoverflow.com/questions/29841690/how-to-consume-one-message
+http://www.rabbitmq.com/releases/rabbitmq-java-client/v2.7.1/rabbitmq-java-client-javadoc-2.7.1/com/rabbitmq/client/Channel.html
+http://stackoverflow.com/questions/18051651/two-questions-about-rabbitmq
+https://gist.github.com/scvalex/613157
