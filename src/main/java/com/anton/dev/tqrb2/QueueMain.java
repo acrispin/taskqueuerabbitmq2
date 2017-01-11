@@ -35,7 +35,10 @@ public class QueueMain {
 //        consumerMessages();
 //        multipleProducers2(20, 100);
 //        multipleProducers2(4, 15);
-        multipleConsumers2(10);
+//        multipleConsumers2(10);
+        Consumer2 cons = Consumer2.getInstance();
+        System.out.println("Code1 : " + System.identityHashCode(cons));
+        System.out.println("Code1 : " + cons.hashCode());
     }
     
     public static void multipleProducers(int numProducers, final int numMsgPerProducers) throws InterruptedException {
